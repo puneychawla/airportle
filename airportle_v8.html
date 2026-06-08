@@ -1,0 +1,379 @@
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{--green:#6aaa64;--yellow:#c9b458;--gray:#787c7e;--border:#d3d6da;--dark:#1a1a1b;}
+body{margin:0;padding:0;font-family:'Clear Sans','Helvetica Neue',Arial,sans-serif;}
+#gw{
+  width:100%;min-height:100vh;
+  background:#fff;color:var(--dark);
+  display:flex;flex-direction:column;align-items:center;
+}
+
+/* HEADER */
+#hdr{
+  width:100%;border-bottom:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;
+  padding:12px 16px 10px;background:#fff;
+}
+#hdr h1{font-size:28px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--dark);}
+#hdr .sub{font-size:12px;color:var(--gray);margin-top:4px;text-align:center;}
+#legend{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap;justify-content:center;}
+.li{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--dark);}
+.ld{width:13px;height:13px;border-radius:2px;flex-shrink:0;}
+
+/* RESULT PANEL */
+#ep{display:none;flex-direction:column;align-items:center;gap:12px;padding:16px;width:100%;border-bottom:1px solid var(--border);background:#fff;}
+#ep.show{display:flex;}
+#er{font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--dark);}
+#ec{font-size:44px;font-weight:700;letter-spacing:8px;color:var(--dark);}
+#ea{font-size:14px;color:var(--gray);text-align:center;}
+#sr{display:flex;gap:28px;}
+.stn{font-size:28px;font-weight:700;color:var(--dark);text-align:center;}
+.stl{font-size:11px;color:var(--gray);text-transform:uppercase;text-align:center;}
+#il{width:100%;max-width:420px;height:190px;background:#f6f6f7;border-radius:8px;border:1px solid var(--border);display:none;align-items:center;justify-content:center;font-size:13px;color:var(--gray);text-align:center;padding:8px;}
+#il.show{display:flex;}
+#ci{width:100%;max-width:420px;height:190px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:none;}
+#ci.show{display:block;}
+#ic{font-size:11px;color:var(--gray);text-align:center;}
+#nl{font-size:12px;color:var(--gray);}
+#btn-row{display:flex;gap:10px;width:100%;max-width:420px;}
+.ep-btn{
+  flex:1;border:none;border-radius:8px;
+  font-family:inherit;font-size:15px;font-weight:700;
+  letter-spacing:1px;padding:14px 0;
+  cursor:pointer;text-transform:uppercase;touch-action:manipulation;
+}
+#ng{background:var(--green);color:#fff;}
+#ng:hover{background:#538d4e;}
+#pg{background:#fff;color:var(--dark);border:2px solid var(--dark) !important;}
+#pg:hover{background:#f6f6f7;}
+
+/* TOAST */
+#toast{
+  font-size:14px;font-weight:700;background:var(--dark);color:#fff;
+  border-radius:6px;padding:10px 18px;margin:8px 0 0;
+  opacity:0;transition:opacity .25s;
+  text-align:center;width:100%;max-width:420px;min-height:40px;
+  display:flex;align-items:center;justify-content:center;
+}
+#toast.show{opacity:1;}
+
+/* BOARD */
+#board{display:flex;flex-direction:column;gap:8px;margin:16px 0 12px;}
+.row{display:flex;gap:8px;}
+.tile{
+  width:min(96px,26vw);height:min(96px,26vw);
+  border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:min(48px,13vw);font-weight:700;text-transform:uppercase;
+  color:var(--dark);background:#fff;user-select:none;
+  border-radius:2px;
+}
+.tile.filled{border-color:#878a8c;animation:tpop .1s ease;}
+@keyframes tpop{50%{transform:scale(1.08);}}
+.tile.f0{animation:flip .5s ease forwards;}
+.tile.f1{animation:flip .5s .15s ease forwards;}
+.tile.f2{animation:flip .5s .3s ease forwards;}
+@keyframes flip{
+  0%{transform:rotateX(0);}
+  49%{transform:rotateX(-90deg);background:#fff;border-color:#878a8c;color:var(--dark);}
+  50%{transform:rotateX(-90deg);}
+  100%{transform:rotateX(0);}
+}
+.tile.correct{background:var(--green);border-color:var(--green);color:#fff;}
+.tile.present{background:var(--yellow);border-color:var(--yellow);color:#fff;}
+.tile.absent{background:var(--gray);border-color:var(--gray);color:#fff;}
+.tile.shake{animation:shake .5s ease;}
+@keyframes shake{10%,30%,50%,70%,90%{transform:translateX(-5px);}20%,40%,60%,80%{transform:translateX(5px);}}
+.tile.bnc{animation:bnc .6s ease;}
+@keyframes bnc{40%{transform:translateY(-20px);}60%{transform:translateY(-10px);}80%{transform:translateY(-5px);}100%{transform:translateY(0);}}
+
+/* KEYBOARD */
+#kb{
+  display:flex;flex-direction:column;
+  gap:8px;width:100%;
+  padding:0 6px 24px;
+}
+.kr{display:flex;justify-content:center;gap:5px;}
+.k{
+  height:min(58px,14vw);
+  flex:1;max-width:min(42px,10vw);min-width:0;
+  border-radius:4px;border:none;cursor:pointer;
+  font-family:inherit;
+  font-size:min(15px,3.8vw);font-weight:700;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;
+  user-select:none;touch-action:manipulation;
+  background-color:#d3d6da;color:var(--dark);
+}
+.k.wide{max-width:min(64px,16vw);flex:1.55;font-size:min(12px,3vw);}
+.k:active{opacity:0.7;transform:scale(0.95);}
+.k.sc{background-color:var(--green) !important;color:#fff !important;}
+.k.sp{background-color:var(--yellow) !important;color:#fff !important;}
+.k.sa{background-color:var(--gray) !important;color:#fff !important;}
+</style>
+
+<div id="gw">
+  <div id="hdr">
+    <h1>Airportle</h1>
+    <div class="sub">Guess the 3-letter airport code &middot; 6 attempts</div>
+    <div id="legend">
+      <div class="li"><div class="ld" style="background:var(--green)"></div>correct</div>
+      <div class="li"><div class="ld" style="background:var(--yellow)"></div>wrong position</div>
+      <div class="li"><div class="ld" style="background:var(--gray)"></div>not in code</div>
+    </div>
+  </div>
+
+  <div id="ep">
+    <div id="er"></div>
+    <div id="ec"></div>
+    <div id="ea"></div>
+    <div id="sr"></div>
+    <div id="il">Loading image...</div>
+    <img id="ci" alt="City" />
+    <div id="ic"></div>
+    <div id="nl"></div>
+    <div id="btn-row">
+      <button id="pg" class="ep-btn">Play More</button>
+      <button id="ng" class="ep-btn">New Daily</button>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <div id="board"></div>
+  <div id="kb">
+    <div class="kr" id="kr0"></div>
+    <div class="kr" id="kr1"></div>
+    <div class="kr" id="kr2"></div>
+  </div>
+</div>
+
+<script>
+var ANSWERS=[
+  ["ATL","Hartsfield-Jackson Atlanta Intl","Atlanta"],["DFW","Dallas/Fort Worth Intl","Dallas"],
+  ["DEN","Denver Intl","Denver"],["ORD","O'Hare Intl","Chicago"],["LAX","Los Angeles Intl","Los Angeles"],
+  ["CLT","Charlotte Douglas Intl","Charlotte"],["MCO","Orlando Intl","Orlando"],
+  ["LAS","Harry Reid Intl","Las Vegas"],["PHX","Phoenix Sky Harbor","Phoenix"],
+  ["MIA","Miami Intl","Miami"],["SEA","Seattle-Tacoma Intl","Seattle"],
+  ["JFK","John F. Kennedy Intl","New York"],["EWR","Newark Liberty Intl","Newark"],
+  ["SFO","San Francisco Intl","San Francisco"],["BOS","Logan Intl","Boston"],
+  ["IAH","George Bush Intercontinental","Houston"],["MSP","Minneapolis-Saint Paul Intl","Minneapolis"],
+  ["DTW","Detroit Metropolitan","Detroit"],["PHL","Philadelphia Intl","Philadelphia"],
+  ["LGA","LaGuardia Airport","New York"],["FLL","Fort Lauderdale-Hollywood Intl","Fort Lauderdale"],
+  ["DCA","Ronald Reagan Washington National","Washington DC"],["IAD","Dulles Intl","Washington DC"],
+  ["MDW","Chicago Midway Intl","Chicago"],["SLC","Salt Lake City Intl","Salt Lake City"],
+  ["BWI","Baltimore/Washington Intl","Baltimore"],["SAN","San Diego Intl","San Diego"],
+  ["TPA","Tampa Intl","Tampa"],["PDX","Portland Intl","Portland"],
+  ["ANC","Ted Stevens Anchorage Intl","Anchorage"],["HNL","Daniel K. Inouye Intl","Honolulu"],
+  ["YYZ","Toronto Pearson Intl","Toronto"],["YVR","Vancouver Intl","Vancouver"],
+  ["YUL","Montreal-Trudeau Intl","Montreal"],["MEX","Mexico City Intl","Mexico City"],
+  ["GRU","Sao Paulo Guarulhos Intl","Sao Paulo"],["GIG","Rio de Janeiro Galeao","Rio de Janeiro"],
+  ["BOG","El Dorado Intl","Bogota"],["LIM","Jorge Chavez Intl","Lima"],
+  ["SCL","Arturo Merino Benitez Intl","Santiago"],["EZE","Ezeiza Intl","Buenos Aires"],
+  ["LHR","London Heathrow","London"],["LGW","London Gatwick","London"],
+  ["CDG","Charles de Gaulle Intl","Paris"],["ORY","Paris Orly","Paris"],
+  ["AMS","Amsterdam Schiphol","Amsterdam"],["FRA","Frankfurt Airport","Frankfurt"],
+  ["MUC","Munich Airport","Munich"],["MAD","Madrid Barajas","Madrid"],
+  ["BCN","Barcelona El Prat","Barcelona"],["FCO","Rome Fiumicino","Rome"],
+  ["MXP","Milan Malpensa","Milan"],["ZRH","Zurich Airport","Zurich"],
+  ["VIE","Vienna Intl","Vienna"],["BRU","Brussels Airport","Brussels"],
+  ["CPH","Copenhagen Airport","Copenhagen"],["ARN","Stockholm Arlanda","Stockholm"],
+  ["OSL","Oslo Gardermoen","Oslo"],["HEL","Helsinki Vantaa","Helsinki"],
+  ["DUB","Dublin Airport","Dublin"],["LIS","Lisbon Humberto Delgado","Lisbon"],
+  ["ATH","Athens Intl","Athens"],["WAW","Warsaw Chopin","Warsaw"],
+  ["PRG","Vaclav Havel Airport","Prague"],["BUD","Budapest Ferenc Liszt Intl","Budapest"],
+  ["IST","Istanbul Airport","Istanbul"],["SVO","Sheremetyevo Intl","Moscow"],
+  ["TLV","Ben Gurion Intl","Tel Aviv"],["DXB","Dubai Intl","Dubai"],
+  ["AUH","Abu Dhabi Intl","Abu Dhabi"],["DOH","Hamad Intl","Doha"],
+  ["KWI","Kuwait Intl","Kuwait City"],["RUH","King Khalid Intl","Riyadh"],
+  ["JED","King Abdulaziz Intl","Jeddah"],["CAI","Cairo Intl","Cairo"],
+  ["ADD","Addis Ababa Bole Intl","Addis Ababa"],["NBO","Jomo Kenyatta Intl","Nairobi"],
+  ["JNB","O.R. Tambo Intl","Johannesburg"],["CPT","Cape Town Intl","Cape Town"],
+  ["LOS","Murtala Muhammed Intl","Lagos"],["CMN","Mohammed V Intl","Casablanca"],
+  ["DEL","Indira Gandhi Intl","New Delhi"],["BOM","Chhatrapati Shivaji Intl","Mumbai"],
+  ["BLR","Kempegowda Intl","Bengaluru"],["MAA","Chennai Intl","Chennai"],
+  ["HYD","Rajiv Gandhi Intl","Hyderabad"],["CCU","Netaji Subhas Chandra Bose","Kolkata"],
+  ["SIN","Singapore Changi","Singapore"],["KUL","Kuala Lumpur Intl","Kuala Lumpur"],
+  ["BKK","Suvarnabhumi Airport","Bangkok"],["CGK","Soekarno-Hatta Intl","Jakarta"],
+  ["MNL","Ninoy Aquino Intl","Manila"],["SGN","Tan Son Nhat Intl","Ho Chi Minh City"],
+  ["HAN","Noi Bai Intl","Hanoi"],["HKG","Hong Kong Intl","Hong Kong"],
+  ["PEK","Beijing Capital Intl","Beijing"],["PVG","Shanghai Pudong Intl","Shanghai"],
+  ["ICN","Incheon Intl","Seoul"],["NRT","Narita Intl","Tokyo"],
+  ["HND","Haneda Airport","Tokyo"],["SYD","Sydney Airport","Sydney"],
+  ["MEL","Melbourne Airport","Melbourne"]
+];
+
+var EXTRA=["AAL","AAR","ABJ","ABQ","ABV","ABZ","ACC","ACE","ADB","ADE","ADL","AEP","AES","AGP","AGR","AJA","AKL","ALA","ALB","ALC","ALG","ANK","ANU","APW","AQJ","ARH","ASB","ASU","ATQ","AUA","AUS","BAH","BAK","BAQ","BBU","BBI","BEG","BEY","BFS","BGI","BGO","BGR","BHX","BIA","BIO","BJL","BJM","BKI","BLL","BLQ","BNE","BOD","BOJ","BON","BRE","BRN","BRS","BSB","BSL","BTS","BUE","BUF","CAL","CAN","CAS","CBR","CCJ","CFU","CGH","CGN","CHC","CHQ","CJU","CKG","CLJ","CMB","CMF","CNF","CNX","COK","CRK","CTA","CTG","CTU","CUN","CUR","CUZ","CVG","CWB","DAC","DAL","DAM","DAR","DCF","DKR","DLA","DME","DNK","DPS","DRS","DUS","EBB","EBL","EDI","EIN","EMA","ESB","EVN","FAO","FBU","FIH","FLR","FNA","FNC","FUE","FUK","GBE","GDL","GDN","GEO","GGT","GLA","GOA","GOH","GOT","GRX","GRZ","GUA","GUM","GVA","GYD","GYE","HAJ","HAM","HAV","HBA","HER","HIR","HKT","HOG","HRE","HRK","HSG","IBZ","IEV","IKA","IKT","INN","IOM","ISB","ITO","JAI","JAX","JIB","JRO","KAN","KBP","KGL","KHH","KHI","KIN","KIX","KJA","KLU","KMG","KRT","KTM","KZN","LAD","LBA","LCA","LCY","LED","LFW","LHE","LJU","LLW","LNZ","LPA","LPB","LUN","LUX","LYS","MAH","MAN","MCT","MDE","MHQ","MKE","MLA","MLE","MMX","MPM","MRS","MRU","MSQ","NAP","NAS","NCE","NIM","NKC","NOU","OAK","ODS","OPO","ORK","ORN","OSA","OTP","OUA","PAP","PBH","PDL","PER","PFO","PHC","PIK","PKX","PLZ","PNH","PNQ","POA","POM","POS","POZ","PPT","PTY","PUJ","PUS","PVR","RAK","RBA","REC","REU","RGN","RIX","RKV","RNO","ROB","ROC","RTM","RUN","SAL","SAP","SAT","SAW","SDJ","SDQ","SDR","SEZ","SHA","SHE","SJC","SJJ","SJO","SJU","SKB","SKG","SKP","SLL","SNA","SOF","SSA","STN","STR","SUB","SVG","SVQ","SXF","SXM","SZX","TAB","TAS","TBS","TER","TGD","TGU","TIA","TIP","TLN","TLS","TMP","TNR","TOS","TPE","TRD","TRN","TRV","TSE","TUN","TXL","UAH","UIO","ULN","URC","VAR","VCE","VKO","VLC","VLI","VNO","VPS","VTE","WLG","WRO","XIY","XMN","YEG","YHZ","YOW","YQB","YWG","YYC","YYJ","ZAG","ZNZ"];
+
+var VALID=new Set(ANSWERS.map(function(a){return a[0];}));
+EXTRA.forEach(function(c){VALID.add(c);});
+
+var KB=[['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['ENTER','Z','X','C','V','B','N','M','⌫']];
+
+var answer,answerInfo,curRow,curCol,tiles,keyEls,keyState,over,moreMode,used,civ;
+var stats={played:0,won:0,streak:0};
+
+function dayIdx(){var n=new Date(),m=new Date(n.getFullYear(),n.getMonth(),n.getDate()),e=new Date(2024,0,1);return Math.floor((m-e)/86400000);}
+function secsLeft(){var n=new Date(),x=new Date(n.getFullYear(),n.getMonth(),n.getDate()+1);return Math.floor((x-n)/1000);}
+function fmtTime(s){var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60;return(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(ss<10?'0':'')+ss;}
+
+function pick(random){
+  var idx;
+  if(random){
+    var av=[];for(var i=0;i<ANSWERS.length;i++)if(used.indexOf(i)<0)av.push(i);
+    if(!av.length){used=[];av=ANSWERS.map(function(_,i){return i;});}
+    idx=av[Math.floor(Math.random()*av.length)];
+  } else {
+    idx=dayIdx()%ANSWERS.length;
+  }
+  used.push(idx);
+  answerInfo=ANSWERS[idx];answer=answerInfo[0];
+}
+
+function buildBoard(){
+  var b=document.getElementById('board');b.innerHTML='';tiles=[];
+  for(var r=0;r<6;r++){
+    var row=document.createElement('div');row.className='row';
+    var ts=[];
+    for(var c=0;c<3;c++){var t=document.createElement('div');t.className='tile';row.appendChild(t);ts.push(t);}
+    b.appendChild(row);tiles.push(ts);
+  }
+}
+
+function buildKb(){
+  keyEls={};keyState={};
+  KB.forEach(function(row,i){
+    var r=document.getElementById('kr'+i);r.innerHTML='';
+    row.forEach(function(k){
+      var btn=document.createElement('button');
+      btn.className='k'+(k.length>1?' wide':'');
+      btn.textContent=k;btn.setAttribute('type','button');
+      btn.addEventListener('click',function(){hk(k);});
+      r.appendChild(btn);keyEls[k]=btn;
+    });
+  });
+}
+
+function startGame(random){
+  curRow=0;curCol=0;over=false;moreMode=!!random;
+  if(civ){clearInterval(civ);civ=null;}
+  document.getElementById('ep').classList.remove('show');
+  document.getElementById('toast').classList.remove('show');
+  document.getElementById('toast').textContent='';
+  pick(random);buildBoard();buildKb();
+}
+
+function hk(k){
+  if(over)return;
+  if(k==='⌫'||k==='BACKSPACE'){
+    if(curCol>0){curCol--;tiles[curRow][curCol].textContent='';tiles[curRow][curCol].classList.remove('filled');}
+  } else if(k==='ENTER'){
+    submit();
+  } else if(/^[A-Z]$/.test(k)&&curCol<3){
+    tiles[curRow][curCol].textContent=k;tiles[curRow][curCol].classList.add('filled');curCol++;
+  }
+}
+
+function submit(){
+  if(curCol<3){shakeRow();showToast('Not enough letters');return;}
+  var guess=tiles[curRow].map(function(t){return t.textContent;}).join('');
+  if(!VALID.has(guess)){shakeRow();showToast('Not a valid IATA code');return;}
+  var result=score(guess);reveal(result,guess);
+}
+
+function score(guess){
+  var result=['absent','absent','absent'],a=answer.split(''),g=guess.split(''),used2=[false,false,false];
+  for(var i=0;i<3;i++){if(g[i]===a[i]){result[i]='correct';used2[i]=true;}}
+  for(var i=0;i<3;i++){
+    if(result[i]==='correct')continue;
+    for(var j=0;j<3;j++){if(!used2[j]&&g[i]===a[j]){result[i]='present';used2[j]=true;break;}}
+  }
+  return result;
+}
+
+function reveal(result,guess){
+  var ts=tiles[curRow];
+  ts.forEach(function(t,i){t.classList.remove('filled');t.classList.add('f'+i);setTimeout(function(){t.className='tile '+result[i];},150+i*150);});
+  var row=curRow;
+  setTimeout(function(){
+    updateKb(guess,result);
+    var won=result.every(function(r){return r==='correct';});
+    if(won){ts.forEach(function(t,i){setTimeout(function(){t.classList.add('bnc');},400+i*100);});setTimeout(function(){endGame(true,row);},1300);}
+    else if(row===5){setTimeout(function(){endGame(false,row);},700);}
+    else{curRow++;curCol=0;}
+  },650);
+}
+
+function updateKb(guess,result){
+  var pri={correct:3,present:2,absent:1};
+  for(var i=0;i<3;i++){
+    var k=guess[i];
+    if((pri[result[i]]||0)>(pri[keyState[k]]||0)){
+      keyState[k]=result[i];var el=keyEls[k];
+      if(el){el.classList.remove('sc','sp','sa');el.classList.add(result[i]==='correct'?'sc':result[i]==='present'?'sp':'sa');}
+    }
+  }
+}
+
+function endGame(won,row){
+  over=true;stats.played++;
+  if(won){stats.won++;stats.streak++;}else{stats.streak=0;}
+  document.getElementById('er').textContent=won?['Genius!','Magnificent!','Impressive!','Splendid!','Great!','Phew!'][row]:'Better luck next time!';
+  document.getElementById('ec').textContent=answer;
+  document.getElementById('ea').textContent=answerInfo[1]+' \u2014 '+answerInfo[2];
+  var wp=stats.played?Math.round(stats.won/stats.played*100):0;
+  document.getElementById('sr').innerHTML=
+    '<div><div class="stn">'+stats.played+'</div><div class="stl">Played</div></div>'+
+    '<div><div class="stn">'+wp+'</div><div class="stl">Win %</div></div>'+
+    '<div><div class="stn">'+stats.streak+'</div><div class="stl">Streak</div></div>';
+  var nlEl=document.getElementById('nl');
+  if(!moreMode){
+    nlEl.textContent='Next daily code in: '+fmtTime(secsLeft());
+    civ=setInterval(function(){var el=document.getElementById('nl');if(el)el.textContent='Next daily code in: '+fmtTime(secsLeft());},1000);
+  } else nlEl.textContent='';
+  document.getElementById('ep').classList.add('show');
+  loadImg(answerInfo[2],answerInfo[1]);
+}
+
+function loadImg(city,name){
+  var il=document.getElementById('il'),ci=document.getElementById('ci'),ic=document.getElementById('ic');
+  il.textContent='Loading image...';il.classList.add('show');ci.classList.remove('show');ic.textContent='';
+  fetch('https://en.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(city.replace(/ /g,'_')))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.thumbnail&&d.thumbnail.source){
+        var src=d.thumbnail.source.replace(/\/\d+px-/,'/640px-');
+        ci.onload=function(){il.classList.remove('show');ci.classList.add('show');ic.textContent=city+' \u00b7 '+name;};
+        ci.onerror=function(){fallbackImg(city,name);};
+        ci.src=src;
+      } else fallbackImg(city,name);
+    }).catch(function(){fallbackImg(city,name);});
+}
+
+function fallbackImg(city,name){
+  var il=document.getElementById('il'),ci=document.getElementById('ci'),ic=document.getElementById('ic');
+  fetch('https://en.wikipedia.org/w/api.php?action=query&titles='+encodeURIComponent(city)+'&prop=pageimages&format=json&pithumbsize=640&origin=*')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var pages=d.query&&d.query.pages;
+      if(pages){var p=Object.values(pages)[0];if(p&&p.thumbnail&&p.thumbnail.source){ci.onload=function(){il.classList.remove('show');ci.classList.add('show');ic.textContent=city+' \u00b7 '+name;};ci.src=p.thumbnail.source;return;}}
+      il.textContent='No image available for '+city;
+    }).catch(function(){il.textContent='Could not load image.';});
+}
+
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},1800);}
+function shakeRow(){tiles[curRow].forEach(function(t){t.classList.remove('shake');void t.offsetWidth;t.classList.add('shake');});}
+
+document.addEventListener('keydown',function(e){
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  var k=e.key.toUpperCase();
+  if(k==='BACKSPACE')hk('BACKSPACE');
+  else if(k==='ENTER')hk('ENTER');
+  else if(/^[A-Z]$/.test(k))hk(k);
+});
+
+document.getElementById('ng').addEventListener('click',function(){used=[];startGame(false);});
+document.getElementById('pg').addEventListener('click',function(){startGame(true);});
+
+used=[];startGame(false);
+</script>
